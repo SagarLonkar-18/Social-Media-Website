@@ -5,6 +5,7 @@ const Post1 = () => {
     return (
         <>
             <Stack flexDirection={"column"} alignItems={"center"} justifyContent={"space-between"}>
+                {/* Inside badge there is avatar */}
                 <Badge overlap='circular' anchorOrigin={{vertical:"bottom",horizontal:"right"}}
                     badgeContent={
                         <Avatar alt='+' src='' sx={{
@@ -15,16 +16,17 @@ const Post1 = () => {
                     <Avatar alt='avatar' src='' sx={{width:40,height:40}}/>
                 </Badge>
                 <Stack flexDirection={"column"} alignItems={"center"} gap={2} height={"100%"}>
-                    <Stepper orientation='vertical' activeStep={0} sx={{
-                        border:'0.1rem solid gray',
+                    <Stepper orientation={'vertical'} activeStep={0} sx={{
+                        border:'1px solid gray',
                         width:"0px",
-                        height:"100%"
+                        height:"100%",
+                        marginTop:"5px"
                     }}></Stepper>
-                    <AvatarGroup total={4} sx={{
-                        '.MuiAvatarGroup-root':{
-                            width:12,
-                            height:12,
-                            fontSize:6,
+                    <AvatarGroup  max={3} sx={{
+                        '& .MuiAvatar-root':{
+                            width:24,
+                            height:24,
+                            fontSize:12,
                         }
                     }}>
                         <Avatar src='' alt=''/>

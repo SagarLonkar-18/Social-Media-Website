@@ -6,7 +6,7 @@ const Input = () => {
         <>
             <Stack flexDirection={"row"} alignItems={"center"} width={"70%"} height={28} justifyContent={"space-between"} p={3} borderBottom={'2px solid gray'} my={5} mx={'auto'}>
                 <Stack flexDirection={"row"} alignItems={"center"} gap={2}>
-                    <Avatar src='' alt='AJ'/>
+                    <Avatar src='' alt='Avatar'/>
                     <Typography color={"GrayText"}>Start a thread...</Typography>
                 </Stack>
                 <Button size='medium' sx={{bgcolor:'gray',color:'aliceblue',":hover":{
