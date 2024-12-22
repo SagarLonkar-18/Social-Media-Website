@@ -1,7 +1,11 @@
 import { Button, Stack, Typography } from '@mui/material'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const Error = () => {
+    
+    const navigate =  useNavigate()
+
     return (
         <>
             {/* sx means own customized style */}
@@ -18,7 +22,10 @@ const Error = () => {
                     <Typography variant='h6'>You entered wrong URL !</Typography>
                     <Button size='large' sx={{bgcolor:"blue",color:'white',borderRadius:'10px',p:2,
                         ":hover":{bgcolor:"green",cursor:'pointer'}
-                    }}>Go Back</Button>
+                    }}
+                    // navigate('/search') , but -1 means return to previous page where you came from 
+                    onClick={()=>{navigate(-1)}}
+                    >Go Back</Button>
                 </Stack>
             </Stack>
         </>
