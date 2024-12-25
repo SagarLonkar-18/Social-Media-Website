@@ -61,3 +61,111 @@ exports.signin = async (req,res) => {
         res.status(400).json({msg:"Error in signin !",err:err.message})
     }   
 }
+
+exports.login = async (req,res) => {
+    try{
+        // we only need email and password for login
+        const {email, password} = req.body;
+        // if any of them are not there then we will throw the error
+        if(!email || !password){
+            return res.status(400).json({msg:"Email and password are required!"});
+        }
+
+        // check if user exists
+        const userExists = await User.findOne({email: email});
+        if(!userExists){
+            return res.status(400).json({msg:"User does not exist! Please sign up."});
+        } 
+
+        // email is there but check if password matches , compare() takes 2 arguments 1st compared with 2nd
+        const passwordMatched = await bcrypt.compare(password,userExists.password);
+        // if password is not matched
+        if(!passwordMatched){
+            return res.status(400).json({msg:"Incorrect credentials!"});
+        }
+        // if password is matched then generate a token
+        const accessToken = jwt.sign({token:userExists._id},process.env.JWT_SECRET, {expiresIn:'30d'} )
+        if(!accessToken){
+            return res.status(400).json({msg:"Token not generated in login !"});
+        }
+        // if access token is geenrated then store in cookie
+        res.cookie('token',accessToken,{
+            maxAge: 1000 * 60 * 60 * 24 * 30,    
+            httpOnly: true,
+            sameSite: 'none',
+            secure:true
+        })
+
+        // if all above conditions are met then user logged in successfully 200 status code means request is successful and data is returned  as response  with msg:User logged in successfully
+        res.status(200).json({msg:"User logged in successfully"});
+    }
+    catch(err){
+        res.status(400).json({msg:"Error in login!",err:err.message})
+    }
+}
+
+// user details controller for profile section  
+exports.userDetails = async (req,res) => {
+    try{
+        // params means we send info through url
+        // first id is required
+        const { id } = req.params;
+        if(!id){
+            return res.status(400).json({msg:" ID is required!"});
+        }
+
+        // check if the user exists of that id , select the user without password , populate followers
+        // populating threads , threads refer to post model so we can access the post models likes , comment etc
+        // similarly populate the replies , who is the admin of reply
+        // reposts is similar like post 
+        const user = await User.findById(id)
+            .select('-password')
+            .populate('followers')
+            .populate({path:"threads",populate:[{path:"likes"},{path:"comments"},{path:"admin"}]})
+            .populate({path:"replies",populate:[{path:"admin"}]})
+            .populate({path:"reposts",populate:[{path:"likes"},{path:"comments"},{path:"admin"}]});
+        
+        res.status(200).json("User Details Fetched !",user);
+
+    }
+    catch(err){
+        res.status(400).json({msg:"Error in user details!",err:err.message})
+    }
+}
+
+exports.followUser = async (req,res) => {
+    try{
+        // this is the id of user which we want to follow
+        const { id } = req.params;
+        if(!id){
+            return res.status(400).json({msg:" ID is required!"});
+        }
+
+        // check if user exists
+        const userExists = await User.findById(id);
+        if(!userExists){
+            return res.status(400).json({msg:"User does not exist!"});
+        }
+
+        // if user exists
+        // req.user means me who is making the request and _id means my id
+        // checking if i exist in the followers 
+        // if we already exist in the followers then remove it from array with pull 
+        if(userExists.followers.includes(req.user._id)){
+            await User.findByIdAndUpdate(userExists._id,{
+                $pull:{followers:req.user._id}
+            },{new:true});
+            return res.status(200).json({msg:`Unfollowed ${userExists.userName}!`});
+        }
+
+        // if user does not exist in the followers then add it to array with push
+        await User.findByIdAndUpdate(userExists._id,{
+            $push:{followers:req.user._id}
+        },{new:true});
+        return res.status(200).json({msg:`Following ${userExists.userName}!`});
+    }
+    catch(err){
+        res.status(400).json({msg:"Error in follow user!",err:err.message})
+    }
+}
+

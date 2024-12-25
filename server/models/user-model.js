@@ -15,7 +15,6 @@ const userSchema = new mongoose.Schema({
     password:{
         type:String,
         required:true,
-        select:false       // select means when we send user information through API username, email all will be send but not password
     },
     bio:{
         type:String,
