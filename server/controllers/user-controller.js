@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');  // used for password hashing
 const jwt = require('jsonwebtoken');
 const formidable = require('formidable');  // used for multimedia data , helpts for combiningly working
 const cloudinary = require('../config/cloudinary'); 
-const { trusted } = require('mongoose');
+// const { trusted } = require('mongoose');
 
 exports.signin = async (req,res) => {
     try {

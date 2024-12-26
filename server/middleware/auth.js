@@ -22,9 +22,9 @@ const auth = async (req,res,next) => {
         // if token is verified
         const user = await User.findById(decodedToken.token)
         .populate('followers')
-        // .populate('threads')
-        // .populate('replies')
-        // .populate('reposts');
+        .populate('threads')
+        .populate('replies')
+        .populate('reposts');
 
         if(!user){
             return res.status(400).json({msg:"User not found in auth!"});
