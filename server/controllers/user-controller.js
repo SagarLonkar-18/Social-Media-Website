@@ -1,6 +1,9 @@
 const User = require('../models/user-model');
 const bcrypt = require('bcrypt');  // used for password hashing
 const jwt = require('jsonwebtoken');
+const formidable = require('formidable');  // used for multimedia data , helpts for combiningly working
+const cloudinary = require('../config/cloudinary'); 
+const { trusted } = require('mongoose');
 
 exports.signin = async (req,res) => {
     try {
@@ -159,6 +162,7 @@ exports.followUser = async (req,res) => {
         }
 
         // if user does not exist in the followers then add it to array with push
+        // new:true shows new updated document in json, gives latest updates
         await User.findByIdAndUpdate(userExists._id,{
             $push:{followers:req.user._id}
         },{new:true});
@@ -169,3 +173,104 @@ exports.followUser = async (req,res) => {
     }
 }
 
+exports.updateProfile = async( req,res) => {
+    try{
+        // first check if the user exists , we will get the req.user from the auth.js middleware 
+        const userExists = await User.findById(req.user._id);
+        if(!userExists){
+            return res.status(400).json({msg:"User does not exist!"});
+        }
+
+        // make an instance of formidable
+        // err means error , fields means text field which will be edited, files mostly means images
+        const form = formidable({});
+        form.parse(req, async(err, fields, files)=>{
+            // if there is any error return it
+            if(err){
+                return res.status(400).json({msg:"Error in formidable!",err:err});
+            }
+            // if there is any text editing like in bio update it
+            // console.log({files,fields});
+            if(fields.text){
+                await User.findByIdAndUpdate(
+                    req.user.id,
+                    {bio:fields.text},
+                    {new:true});
+            }
+            // if there are any files 
+            if(files.media){
+                // if user already has a image/profile pic we will first delete it 
+                if(userExists.public_id){
+                    await cloudinary.uploader.destroy(userExists.public_id, 
+                        (error, result) => {
+                            console.log({error, result});
+                        }
+                    )
+                }
+                // upload the new image to cloudinary , folder parameter means all files will be stored properly here in folder
+                // when a image will be uploaded cloudinary will create a new folder Threads_clone and upload in Profiles folder
+                const uploadedImage = await cloudinary.uploader.upload(files.media.filepath,{folder:'Threads_clone/Profiles'})
+                if(!uploadedImage){
+                    return res.status(400).json({msg:"Error while uploading pic !"});
+                }
+                // console.log(uploadedImage)
+                // after the image is uploaded save it
+                await User.findByIdAndUpdate(
+                    req.user._id,
+                    {
+                        profilePic:uploadedImage.secure_url,
+                        public_id:uploadedImage.public_id
+                    },
+                    {new:true}
+                )
+                res.status(201).json({msg:"Profile updated successfully !"})
+            }
+        })
+    }
+    catch(err){
+        res.status(400).json({msg:"Error in update profile!",err:err.message})
+    }
+}
+
+exports.searchUser = async(req,res) => {
+    try{
+        const {query} = req.params;
+        // checks does the regex matches query and options makes it case insensitive 
+        const users = await User.find({
+            $or:[
+                {userName: {$regex:query, $options:'i'}},
+                {email: {$regex:query, $options:'i'}}
+            ]
+        })
+        res.status(201).json({msg:"Searched !",users})
+    }
+    catch(err){
+        res.status(400).json({msg:"Error in search user!",err:err.message})
+    }
+}
+
+exports.logout = async (req,res) => {
+    // when user logs out hes cookies are replaced with this cookie
+    try{
+        res.cookie('token','',{
+            maxAge: Date.now(),
+            httpOnly: true,
+            sameSite: 'none',
+            secure:true
+        })
+        res.status(201).json({msg:"You logged out !"});
+    }
+    catch(err){
+        res.status(400).json({msg:"Error in logout!",err:err.message})
+    }
+}
+
+// we will get our own info when we go on this route
+exports.myInfo = async (req,res) => {
+    try{
+        res.status(200).json({me:req.user});
+    }
+    catch(err){
+        res.status(400).json({msg:"Error in myInfo!",err:err.message});
+    }
+}
