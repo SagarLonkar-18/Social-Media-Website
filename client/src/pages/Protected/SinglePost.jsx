@@ -14,7 +14,7 @@ const SinglePost = () => {
                     <Comments/>
                 </Stack>
                 <TextField variant='outlined' autoFocus placeholder='Comment here...' id='comment' 
-                sx={{width:'50%', mx:'auto', my:5, p:1}}
+                sx={{width:'50%',mx:'auto', my:5, p:1}}
                 onChange={(e) => setComment(e.target.value)}
                 />
             </Stack>

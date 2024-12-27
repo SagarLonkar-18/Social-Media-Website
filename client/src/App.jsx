@@ -15,15 +15,17 @@ import Replies from './pages/Protected/profile/Replies';
 import Reposts from './pages/Protected/profile/Reposts';
 import SinglePost from './pages/Protected/SinglePost';
 import Registerr from './pages/Registerr';
+import { useSelector } from 'react-redux';
 
 const App = () => {
 
+  const { darkMode } = useSelector(state=>state.service); 
   const data = true;
 
   return (
     <>
       {/* Box is a material ui component which acts like a div */}
-      <Box minHeight={"100vh"} >
+      <Box minHeight={"100vh"} className={darkMode ? 'mode' : ""} >
           <BrowserRouter>
               <Routes>
                 {/* if data not available show register route  */}

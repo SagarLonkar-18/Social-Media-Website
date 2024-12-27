@@ -2,7 +2,12 @@ import { Avatar, Box, Button, Dialog, DialogContent, DialogTitle, Stack, Typogra
 import React, { useRef, useState } from 'react'
 import { RxCross2 } from 'react-icons/rx';
 import { FaImages } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { addPostModal } from '../../redux/slice';
 const AddPost = () => {
+
+    const { openAddPostModal } = useSelector( (state) => state.service)
+
     const _300 = useMediaQuery("(min-width:300px)");
     const _500 = useMediaQuery("(min-width:500px)");
     const _700 = useMediaQuery("(min-width:700px)");
@@ -11,9 +16,10 @@ const AddPost = () => {
     const [media,setMedia] = useState();
 
     const mediaRef = useRef();
+    const dispatch = useDispatch();
 
     const handleClose = () => {
-
+        dispatch(addPostModal(false));
     }
 
     const handleMediRef = () => {
@@ -24,7 +30,7 @@ const AddPost = () => {
 
     return (
         <>
-            <Dialog open={true} onClose={handleClose} fullWidth fullScreen={_700 ? false : true}>
+            <Dialog open={openAddPostModal} onClose={handleClose} fullWidth fullScreen={_700 ? false : true}>
                 <Box position={"absolute"} top={20} right={20} onClick={handleClose}>
                     <RxCross2 size={28} className='image-icon'/>
                 </Box>

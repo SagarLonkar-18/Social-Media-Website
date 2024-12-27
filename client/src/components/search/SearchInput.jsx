@@ -3,6 +3,7 @@ import {InputAdornment, TextField, useMediaQuery} from '@mui/material'
 import {FaSearch} from 'react-icons/fa'
 
 const SearchInput = () => {
+    const { darkMode } = useSelector(state=>state.service);
     const _700 = useMediaQuery("(min-width:700px)");
     return (
         <>
@@ -13,7 +14,7 @@ const SearchInput = () => {
                 borderRadius:"15px",
                 px:1, py:1, my:5, mx:"auto",
                 "& .MuiOutlinedInput-root":{
-                    color:"black",
+                    color : darkMode ? 'whitesmoke' : 'black',
                     '& fieldset':{
                         border:"none", 
                     }
@@ -22,7 +23,7 @@ const SearchInput = () => {
             placeholder='Search user' 
             InputProps={{
                 startAdornment:(
-                    <InputAdornment position='start' sx={{color:"gray"}}>
+                    <InputAdornment position='start' sx={{color : darkMode ? 'whitesmoke' : 'black'}}>
                         <FaSearch/>
                     </InputAdornment>
                 )

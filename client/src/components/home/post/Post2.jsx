@@ -3,7 +3,11 @@ import {Stack, Typography, useMediaQuery} from '@mui/material'
 import {FaRegHeart, FaRegComment, FaRetweet} from "react-icons/fa6"
 import { IoMdSend } from "react-icons/io"
 import {Link} from "react-router-dom"
+import { useSelector } from 'react-redux'
 const Post2 = () => {
+    
+    const { darkMode } = useSelector(state=>state.service); 
+
     const _300 = useMediaQuery("(min-width:300px)");
     const _400 = useMediaQuery("(min-width:400px)");
     const _500 = useMediaQuery("(min-width:500px)");
@@ -17,7 +21,9 @@ const Post2 = () => {
                             Sagar Lonkar
                         </Typography>
                         <Link to={'/post/2'} className='link'>
-                            <Typography variant='h5' fontSize={_700 ? "1.2rem" : _400 ? "1rem" : _300 ? "0.9rem" : "0.8rem"}>
+                            <Typography variant='h5' fontSize={_700 ? "1.2rem" : _400 ? "1rem" : _300 ? "0.9rem" : "0.8rem"}
+                                className={darkMode ? 'mode' : ''}
+                            >
                                 Practice project
                             </Typography>
                         </Link>
@@ -32,8 +38,8 @@ const Post2 = () => {
                         <IoMdSend size={_700 ? 32 : _300 ? 28 : 24}/>
                     </Stack>
                     <Stack flexDirection={'row'} gap={1} position={"relative"} top={-3} left={4}>
-                        <Typography variant='caption' color={'GrayText'} fontSize={_700 ? '1.1rem' : "1rem"}>2 likes .</Typography>
-                        <Typography variant='caption' color={'GrayText'} fontSize={_700 ? '1.1rem' : "1rem"}>1 comment{" "}</Typography>
+                        <Typography variant='caption' color={ darkMode ? 'white' : 'GrayText'} fontSize={_700 ? '1.1rem' : "1rem"}>2 likes .</Typography>
+                        <Typography variant='caption' color={ darkMode ? 'white' : 'GrayText'} fontSize={_700 ? '1.1rem' : "1rem"}>1 comment{" "}</Typography>
                     </Stack>
                 </Stack>
             </Stack>

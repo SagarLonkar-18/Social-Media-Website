@@ -1,7 +1,8 @@
 import React from 'react'
 import { Avatar, Button, Stack, Typography, useMediaQuery } from '@mui/material'
-
+import {useSelector} from 'react-redux';
 const ProfileBar = () => {
+    const { darkMode } = useSelector(state=>state.service); 
     const _700 = useMediaQuery("(min-width:700px)");
     return (
         <>
@@ -15,7 +16,7 @@ const ProfileBar = () => {
                         <Typography variant='caption' fontSize={_700 ? "1rem" : "0.9rem"}>3 followers</Typography>
                     </Stack>
                 </Stack>
-                <Button size='medium' sx={{bgcolor:"#1877F2",color:"white",borderRadius:'10px',p:2,height:40}}>Follow</Button>
+                <Button size='medium' sx={{bgcolor:"#1877F2",color:darkMode?'whitesmoke':'black',borderRadius:'10px',p:2,height:40}}>Follow</Button>
             </Stack>
         </>
     )
